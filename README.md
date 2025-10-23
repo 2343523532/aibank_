@@ -5,7 +5,7 @@ SelfAware AI Bank is a lightweight playground for orchestrating cooperative AI a
 ## Features
 
 - **Agent Framework** – Implement custom agents by inheriting from `BaseAgent` and reporting structured results.
-- **Finance Agents** – Includes ready-made agents for liquidity optimisation and credit risk analysis.
+- **Finance Agents** – Includes ready-made agents for liquidity optimisation, credit risk analysis, and scenario stress testing.
 - **Introspection Engine** – Aggregates execution history and can trigger simple interventions when agents go offline.
 - **Markdown Roles** – Convert simple markdown briefs into runnable agents for quick prototyping of new roles.
 - **Demo Script** – Run `python main.py` to execute a simulated banking scenario and view agent outputs.
@@ -32,10 +32,10 @@ selfaware_ai_bank/
 2. **Run the demo:**
 
    ```bash
-   python main.py
+   python main.py [--target-buffer 1500000] [--high-risk-threshold 0.08] [--summary-path reports/summary.json]
    ```
 
-   The script registers the bundled agents, runs them against a sample context, and prints a system summary.
+   The script registers the bundled agents (including the new stress tester), runs them against a sample context, and prints a system summary. Command-line options let you tailor the demo without editing code.
 
 3. **Add your own agents:**
    - Create a new module that subclasses `BaseAgent`.
