@@ -17,13 +17,24 @@ selfaware_ai_bank/
 ├── agents/
 │   └── finance/
 │       ├── credit_risk_analyzer.py
-│       └── liquidity_optimizer.py
+│       ├── liquidity_optimizer.py
+│       └── stress_tester.py
 ├── core/
 │   ├── base_agent.py
 │   └── introspection_engine.py
 ├── bank_orchestrator.py
 └── utils/
     └── markdown_loader.py
+docs/
+├── finance/
+├── engineering/
+├── product/
+├── marketing/
+├── design/
+├── governance/
+├── operations/
+├── testing/
+└── consciousness/
 ```
 
 ## Getting Started

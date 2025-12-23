@@ -66,7 +66,7 @@ def load_markdown_agents(bank: SelfAwareAIBank, enable_markdown: bool) -> None:
     if not docs_path.exists():
         return
 
-    markdown_specs = bank.load_markdown_roles(*docs_path.glob("*.md"))
+    markdown_specs = bank.load_markdown_roles(*docs_path.rglob("*.md"))
     bank.load_agents_from_specs(markdown_specs)
 
 
