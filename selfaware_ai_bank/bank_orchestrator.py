@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type
 
@@ -61,7 +61,7 @@ class SelfAwareAIBank:
     def run_agent(self, agent: BaseAgent) -> Dict[str, Any]:
         output = agent.execute(self.context)
         agent.update_state(notes={"last_output": output})
-        record = RunRecord(agent=agent.name, timestamp=datetime.utcnow(), output=output)
+        record = RunRecord(agent=agent.name, timestamp=datetime.now(timezone.utc), output=output)
         log_entry = {
             "agent": record.agent,
             "timestamp": record.timestamp.isoformat(),

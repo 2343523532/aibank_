@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 
@@ -35,7 +35,7 @@ class BaseAgent(ABC):
             self.state.active = active
         if notes:
             self.state.notes.update(notes)
-        self.state.last_update = datetime.utcnow()
+        self.state.last_update = datetime.now(timezone.utc)
 
     def report_status(self) -> Dict[str, Any]:
         """Return a structured view that the introspection engine can consume."""
