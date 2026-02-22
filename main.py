@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 from pathlib import Path
 from pprint import pprint
 from typing import Iterable, Optional
 
 from selfaware_ai_bank import SelfAwareAIBank
 from selfaware_ai_bank.agents import CreditRiskAnalyzer, LiquidityOptimizer, StressTester
+from selfaware_ai_bank.cyber_os_v5 import MatrixServer, SYNONYM_GROUPS, SecureBankSystem, scan_network
 
 
 def build_demo_context() -> dict:
@@ -54,7 +56,60 @@ def parse_args(args: Optional[Iterable[str]] = None) -> argparse.Namespace:
         action="store_true",
         help="Disable auto-loading of markdown-defined agents.",
     )
+    parser.add_argument(
+        "--cyber-os",
+        action="store_true",
+        help="Run the interactive CYBER-OS v5.0 gameplay loop.",
+    )
     return parser.parse_args(args=args)
+
+
+def run_cyber_os() -> None:
+    bank = SecureBankSystem()
+    web = MatrixServer(bank)
+
+    print("CYBER-OS v5.0 booted. Type 'help' for commands.")
+    while True:
+        command = input("root@cyber-os:~# ").strip().lower()
+        if command == "help":
+            print("Modules: net-up, net-down, scan, bank, status, exit")
+        elif command == "net-up":
+            web.start()
+            print("Public Matrix Interface online on http://localhost:8080")
+        elif command == "net-down":
+            web.stop()
+            print("Public Matrix Interface taken offline.")
+        elif command == "scan":
+            print("Scanning 192.168.0.x subnet...")
+            for result in scan_network():
+                print(result)
+        elif command == "status":
+            print(f"ACTIVE NETWORK TRACE LEVEL: {bank.trace_level}%")
+            if bank.locked:
+                print("BLACK ICE ACTIVE: terminal is permanently locked.")
+        elif command == "bank":
+            concept = random.choice(list(SYNONYM_GROUPS.keys()))
+            print(f">> ICE ACTIVE: Semantic concept required '{concept}'")
+            user = input("User ID: ")
+            account = input("Account ID: ")
+            amount = int(input("Amount: ") or "0")
+            signature = input("Signature: ")
+            passphrase = input("Semantic Passphrase: ")
+            result = bank.request_withdrawal(
+                user=user,
+                account_id=account,
+                amount=amount,
+                signature=signature,
+                passphrase=passphrase,
+                required_concept=concept,
+            )
+            print(result)
+        elif command == "exit":
+            web.stop()
+            print("Terminating connection...")
+            return
+        else:
+            print("ERROR: Command not found. Type 'help'.")
 
 
 def load_markdown_agents(bank: SelfAwareAIBank, enable_markdown: bool) -> None:
@@ -81,6 +136,10 @@ def maybe_write_summary(summary_path: Optional[Path], summary: dict) -> None:
 
 def main(argv: Optional[Iterable[str]] = None) -> None:
     args = parse_args(argv)
+
+    if args.cyber_os:
+        run_cyber_os()
+        return
 
     bank = SelfAwareAIBank(context=build_demo_context())
     bank.register_agents(
