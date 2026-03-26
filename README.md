@@ -65,6 +65,15 @@ docs/
 
    - Running `main.py` will automatically load these definitions and turn them into runnable agents.
 
+
+4. **Run the Common Lisp quantum simulation (optional):**
+
+   ```bash
+   sbcl --script quantum_ai.lisp
+   ```
+
+   This script runs three full cognition/financial cycles using the `quantum-super-ai` package.
+
 ## Next Steps
 
 Ideas for expanding the playground:
