@@ -72,7 +72,7 @@ docs/
    sbcl --script quantum_ai.lisp
    ```
 
-   This script runs three full cognition/financial cycles using the `quantum-super-ai` package.
+   This script runs three full cognition/financial cycles using the `quantum-strat` package and the V3 entropic strategist loop.
 
 ## Next Steps
 
