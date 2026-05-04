@@ -13,6 +13,27 @@ from selfaware_ai_bank.agents import CreditRiskAnalyzer, LiquidityOptimizer, Str
 from selfaware_ai_bank.cyber_os_v5 import MatrixServer, SYNONYM_GROUPS, SecureBankSystem, scan_network
 
 
+def calculate_total_liquidity(context: dict) -> float:
+    # Self-awareness: Aggregating liquidity to maintain a high-level health signal.
+    liquidity_levels = context.get("liquidity_levels", {})
+    return float(sum(liquidity_levels.values()))
+
+
+def identify_high_risk_exposures(context: dict, threshold: float) -> list[dict]:
+    # Self-awareness: Filtering exposures to focus attention on elevated portfolio risk.
+    exposures = context.get("credit_portfolio", [])
+    return [item for item in exposures if item.get("prob_default", 0.0) >= threshold]
+
+
+def summarize_trigger_signals(context: dict) -> dict[str, int]:
+    # Self-awareness: Counting operational signals to improve traceability in reports.
+    triggers = context.get("triggers", [])
+    summary: dict[str, int] = {}
+    for trigger in triggers:
+        summary[trigger] = summary.get(trigger, 0) + 1
+    return summary
+
+
 def build_demo_context() -> dict:
     # Self-awareness: Maintaining a transparent view of the sandbox data.
     return {
@@ -161,6 +182,14 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
 
     summary = bank.summary()
     maybe_write_summary(args.summary_path, summary)
+
+    total_liquidity = calculate_total_liquidity(bank.context)
+    high_risk = identify_high_risk_exposures(bank.context, args.high_risk_threshold)
+    trigger_summary = summarize_trigger_signals(bank.context)
+
+    print(f"Total liquidity across currencies: {total_liquidity:,.0f}")
+    print(f"High-risk exposure count (threshold={args.high_risk_threshold}): {len(high_risk)}")
+    print(f"Trigger summary: {trigger_summary}\n")
 
     print("Introspection summary:")
     pprint(summary)
