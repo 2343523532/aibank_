@@ -100,5 +100,31 @@ class SelfAwareAIBank:
     def update_context(self, **kwargs: Any) -> None:
         self.context.update(kwargs)
 
+
+    def get_agent(self, name: str) -> Optional[BaseAgent]:
+        """Return the first registered agent matching ``name``."""
+        for agent in self.agents:
+            if agent.name == name:
+                return agent
+        return None
+
+    def recent_history(self, *, limit: int = 10, agent: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Return recent run history, optionally filtered to one agent."""
+        entries = self.history
+        if agent is not None:
+            entries = [entry for entry in entries if entry.get("agent") == agent]
+        if limit <= 0:
+            return []
+        return entries[-limit:]
+
+    def confidence_trend(self) -> Dict[str, Optional[float]]:
+        """Compute first/latest confidence values and their delta."""
+        values = [entry["confidence"] for entry in self.history if "confidence" in entry]
+        if not values:
+            return {"first": None, "latest": None, "delta": None}
+        first = float(values[0])
+        latest = float(values[-1])
+        return {"first": first, "latest": latest, "delta": latest - first}
+
     def has_agent(self, agent_type: Type[BaseAgent]) -> bool:
         return any(isinstance(agent, agent_type) for agent in self.agents)

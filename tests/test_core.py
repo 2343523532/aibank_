@@ -9,7 +9,7 @@ class MockAgent(BaseAgent):
         super().__init__(name=name, category="Test", purpose="Testing")
 
     def execute(self, context):
-        return {"status": "success", "value": 42}
+        return {"status": "success", "value": 42, "confidence": 0.75}
 
 class TestBaseAgent(unittest.TestCase):
     def test_initialization(self):
@@ -22,7 +22,7 @@ class TestBaseAgent(unittest.TestCase):
     def test_execute(self):
         agent = MockAgent()
         result = agent.execute({})
-        self.assertEqual(result, {"status": "success", "value": 42})
+        self.assertEqual(result, {"status": "success", "value": 42, "confidence": 0.75})
 
     def test_update_state(self):
         agent = MockAgent()
@@ -63,6 +63,33 @@ class TestBankOrchestrator(unittest.TestCase):
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0][0], "Agent1")
         self.assertEqual(results[1][0], "Agent2")
+
+
+    def test_get_agent_and_recent_history(self):
+        bank = SelfAwareAIBank()
+        agent1 = MockAgent(name="Agent1")
+        agent2 = MockAgent(name="Agent2")
+        bank.register_agents([agent1, agent2])
+
+        bank.run_all()
+
+        self.assertIs(bank.get_agent("Agent1"), agent1)
+        self.assertIsNone(bank.get_agent("Missing"))
+
+        self.assertEqual(len(bank.recent_history(limit=1)), 1)
+        self.assertEqual(len(bank.recent_history(limit=10, agent="Agent2")), 1)
+        self.assertEqual(bank.recent_history(limit=0), [])
+
+    def test_confidence_trend(self):
+        bank = SelfAwareAIBank()
+        agent = MockAgent()
+        bank.register_agent(agent)
+
+        bank.run_agent(agent)
+        self.assertEqual(bank.confidence_trend(), {"first": 0.75, "latest": 0.75, "delta": 0.0})
+
+        bank.history.append({"agent": "Manual", "confidence": 0.55})
+        self.assertEqual(bank.confidence_trend(), {"first": 0.75, "latest": 0.55, "delta": -0.19999999999999996})
 
     def test_summary(self):
         bank = SelfAwareAIBank()
