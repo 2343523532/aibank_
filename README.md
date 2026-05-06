@@ -5,7 +5,7 @@ SelfAware AI Bank is a lightweight playground for orchestrating cooperative AI a
 ## Features
 
 - **Agent Framework** – Implement custom agents by inheriting from `BaseAgent` and reporting structured results.
-- **Finance Agents** – Includes ready-made agents for liquidity optimisation, credit risk analysis, and scenario stress testing.
+- **Finance Agents** – Includes ready-made agents for liquidity optimisation, credit risk analysis, scenario stress testing, and transparent transaction anomaly detection.
 - **Introspection Engine** – Aggregates execution history and can trigger simple interventions when agents go offline.
 - **Markdown Roles** – Convert simple markdown briefs into runnable agents for quick prototyping of new roles.
 - **Demo Script** – Run `python main.py` to execute a simulated banking scenario and view agent outputs.
@@ -18,7 +18,8 @@ selfaware_ai_bank/
 │   └── finance/
 │       ├── credit_risk_analyzer.py
 │       ├── liquidity_optimizer.py
-│       └── stress_tester.py
+│       ├── stress_tester.py
+│       └── transaction_anomaly_detector.py
 ├── core/
 │   ├── base_agent.py
 │   └── introspection_engine.py
@@ -46,7 +47,7 @@ docs/
    python main.py [--target-buffer 1500000] [--high-risk-threshold 0.08] [--summary-path reports/summary.json]
    ```
 
-   The script registers the bundled agents (including the new stress tester), runs them against a sample context, and prints a system summary. Command-line options let you tailor the demo without editing code.
+   The script registers the bundled agents (including the stress tester and transaction anomaly detector), runs them against a sample context, and prints a system summary. Command-line options let you tailor the demo without editing code.
 
 3. **Add your own agents:**
    - Create a new module that subclasses `BaseAgent`.
@@ -66,7 +67,7 @@ docs/
    - Running `main.py` will automatically load these definitions and turn them into runnable agents.
 
 
-4. **Run the Common Lisp quantum simulation (optional):**
+5. **Run the Common Lisp quantum simulation (optional):**
 
    ```bash
    sbcl --script quantum_ai.lisp
@@ -81,6 +82,7 @@ Ideas for expanding the playground:
 - Persist execution history to disk or a database for auditing.
 - Integrate external data sources to enrich the shared context.
 - Build a web dashboard that visualises agent outputs and performance metrics in real time.
+- Replace the demo transaction rules with audited, explainable model scoring once production-grade data governance is available.
 
 ## License
 
