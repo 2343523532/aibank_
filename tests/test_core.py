@@ -44,6 +44,12 @@ class TestIntrospectionEngine(unittest.TestCase):
 
         self.assertEqual(analysis["agents_tracked"], 1)
         self.assertEqual(analysis["categories"]["Test"], 1)
+        self.assertEqual(analysis["low_confidence_agents"], [])
+        self.assertEqual(analysis["health_score"], 0.75)
+        self.assertEqual(
+            analysis["recommendations"],
+            ["System telemetry is stable; continue monitoring drift and anomalies."],
+        )
 
 class TestBankOrchestrator(unittest.TestCase):
     def test_register_agent(self):

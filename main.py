@@ -6,10 +6,15 @@ import json
 import random
 from pathlib import Path
 from pprint import pprint
-from typing import Iterable, Optional
+from typing import Dict, Iterable, Optional, Union
 
 from selfaware_ai_bank import SelfAwareAIBank
-from selfaware_ai_bank.agents import CreditRiskAnalyzer, LiquidityOptimizer, StressTester
+from selfaware_ai_bank.agents import (
+    CreditRiskAnalyzer,
+    LiquidityOptimizer,
+    StressTester,
+    TransactionAnomalyDetector,
+)
 from selfaware_ai_bank.cyber_os_v5 import MatrixServer, SYNONYM_GROUPS, SecureBankSystem, scan_network
 
 
@@ -34,6 +39,23 @@ def summarize_trigger_signals(context: dict) -> dict[str, int]:
     return summary
 
 
+def summarize_transaction_risk(
+    context: dict, *, high_value_threshold: float = 250_000.0
+) -> Dict[str, Union[float, int]]:
+    # Safety note: This transparent demo heuristic supports review;
+    # it does not make real banking decisions.
+    transactions = context.get("transactions", [])
+    total_volume = float(sum(float(tx.get("amount", 0.0)) for tx in transactions))
+    high_value_count = sum(
+        1 for tx in transactions if float(tx.get("amount", 0.0)) >= high_value_threshold
+    )
+    return {
+        "transaction_count": len(transactions),
+        "total_volume": round(total_volume, 2),
+        "high_value_count": high_value_count,
+    }
+
+
 def build_demo_context() -> dict:
     # Self-awareness: Maintaining a transparent view of the sandbox data.
     return {
@@ -47,6 +69,13 @@ def build_demo_context() -> dict:
             {"name": "Retail Mortgages", "exposure": 5_000_000, "prob_default": 0.01, "loss_given_default": 0.35},
             {"name": "Corporate Loans", "exposure": 3_200_000, "prob_default": 0.06, "loss_given_default": 0.45},
             {"name": "SME Lending", "exposure": 1_100_000, "prob_default": 0.08, "loss_given_default": 0.5},
+        ],
+        "transactions": [
+            {"id": "TX-1001", "account_id": "acct-retail-1", "amount": 1250.0, "region": "US"},
+            {"id": "TX-1002", "account_id": "acct-retail-1", "amount": 725.0, "region": "US"},
+            {"id": "TX-1003", "account_id": "acct-retail-1", "amount": 310_000.0, "region": "US"},
+            {"id": "TX-1004", "account_id": "acct-corp-7", "amount": 50_000.0, "region": "EU"},
+            {"id": "TX-1005", "account_id": "acct-corp-9", "amount": 450_000.0, "region": "Sanctioned-Zone"},
         ],
         "triggers": ["Fraud Detection", "Liquidity Monitoring"],
     }
@@ -168,6 +197,7 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
             LiquidityOptimizer(target_buffer=args.target_buffer),
             CreditRiskAnalyzer(high_risk_threshold=args.high_risk_threshold),
             StressTester(),
+            TransactionAnomalyDetector(),
         ]
     )
 
@@ -186,10 +216,12 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
     total_liquidity = calculate_total_liquidity(bank.context)
     high_risk = identify_high_risk_exposures(bank.context, args.high_risk_threshold)
     trigger_summary = summarize_trigger_signals(bank.context)
+    transaction_risk = summarize_transaction_risk(bank.context)
 
     print(f"Total liquidity across currencies: {total_liquidity:,.0f}")
     print(f"High-risk exposure count (threshold={args.high_risk_threshold}): {len(high_risk)}")
-    print(f"Trigger summary: {trigger_summary}\n")
+    print(f"Trigger summary: {trigger_summary}")
+    print(f"Transaction risk summary: {transaction_risk}\n")
 
     print("Introspection summary:")
     pprint(summary)

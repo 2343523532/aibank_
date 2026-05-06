@@ -1,6 +1,11 @@
 import unittest
 
-from main import calculate_total_liquidity, identify_high_risk_exposures, summarize_trigger_signals
+from main import (
+    calculate_total_liquidity,
+    identify_high_risk_exposures,
+    summarize_transaction_risk,
+    summarize_trigger_signals,
+)
 
 
 class TestMainHelpers(unittest.TestCase):
@@ -22,6 +27,19 @@ class TestMainHelpers(unittest.TestCase):
     def test_summarize_trigger_signals(self):
         context = {"triggers": ["Fraud", "Liquidity", "Fraud"]}
         self.assertEqual(summarize_trigger_signals(context), {"Fraud": 2, "Liquidity": 1})
+
+    def test_summarize_transaction_risk(self):
+        context = {
+            "transactions": [
+                {"amount": 100},
+                {"amount": 250_000},
+                {"amount": 25_500},
+            ]
+        }
+        self.assertEqual(
+            summarize_transaction_risk(context),
+            {"transaction_count": 3, "total_volume": 275600.0, "high_value_count": 1},
+        )
 
 
 if __name__ == "__main__":
